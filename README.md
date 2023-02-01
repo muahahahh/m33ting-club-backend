@@ -20,12 +20,3 @@ Application is thoroughly covered with unit and integration tests using Nunit.
 5. [Env variables](./docs/overriding_env_variables.md)
 6. [Setup](./docs/project_setup.md)
 
-More docs in project's confluence and google drive.
-
-#### Deployment urls:
-
-Staging:
-https://staging.api.m33ting.club/swagger/index.html
-
-Production:
-https://api.m33ting.club/swagger/index.html
