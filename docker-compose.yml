@@ -1,0 +1,39 @@
+version: "3"
+services:
+  m33ting-club-backend:
+    container_name: m33ting-club-backend
+    image: m33ting-club-backend:latest
+    restart: always
+    build: 
+      context: .
+      target: final
+    ports:
+      - "8080:8080"
+    depends_on:
+      - m33ting-club-postgres
+    env_file:
+      - .env
+    volumes:
+      - ./firebase:/app/firebase
+    networks:
+      - m33ting-club-network
+
+  m33ting-club-postgres:
+    container_name: m33ting-club-postgres
+    build: 
+      dockerfile: db.Dockerfile
+      context: .
+    restart: always
+    volumes:
+      - ./var/pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_DB: m33tingClubDb
+    networks:
+      - m33ting-club-network
+
+networks:
+  m33ting-club-network:

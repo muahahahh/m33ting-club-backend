@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+set -u
+set -x
+
+DIR=$(cat /opt/codedeploy-agent/deployment-root/deployment-instructions/${DEPLOYMENT_GROUP_ID}_most_recent_install)
+cd $DIR/deployment-archive
+
+COMPOSE="docker-compose -p m33ting-club -f docker-compose.yml"
+
+${COMPOSE} down || true

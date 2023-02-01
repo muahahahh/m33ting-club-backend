@@ -1,0 +1,20 @@
+version: "3"
+services:
+  m33ting-club-backend:
+    container_name: m33ting-club-backend
+    image: m33ting-club-backend:latest
+    logging:
+      driver: awslogs
+      options:
+        awslogs-region: eu-central-1
+        awslogs-group: meeting-club-api-staging
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.staging
+    volumes:
+      - ./firebase:/app/firebase

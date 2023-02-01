@@ -1,0 +1,19 @@
+version: 0.0
+os: linux
+hooks:
+  BeforeInstall:
+    - location: codedeploy/install_dependencies
+      timeout: 300
+      runas: root
+  ApplicationStart:
+    - location: codedeploy/start_server
+      timeout: 600
+      runas: root
+  ApplicationStop:
+    - location: codedeploy/stop_server
+      timeout: 300
+      runas: root
+  ValidateService:
+    - location: codedeploy/validate_service
+      timeout: 300
+      runas: root

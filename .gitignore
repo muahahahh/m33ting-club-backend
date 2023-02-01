@@ -1,0 +1,17 @@
+.idea
+.vs/
+/*.suo
+**/bin
+**/**/bin
+**/obj
+**/**/obj
+**/*.csproj.user
+*.user
+/output
+/.nuke/temp
+/var
+.env
+.env.staging
+/firebase/firebase-credentials.json
+appsettings.*.json
+firebase-configuration.json

@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <None Remove="Initialization\createTables.sql" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Structure\app\Tables\user.sql" />
+      <Content Include="Structure\app\Tables\user.sql" />
+      <None Remove="Structure\app\Views\v_user.sql" />
+      <Content Include="Structure\app\Views\v_user.sql" />
+      <None Remove="Structure\app\Tables\application.sql" />
+      <Content Include="Structure\app\Tables\application.sql" />
+      <None Remove="Structure\app\Tables\meeting.sql" />
+      <Content Include="Structure\app\Tables\meeting.sql" />
+      <None Remove="Structure\app\Tables\meeting_tag.sql" />
+      <Content Include="Structure\app\Tables\meeting_tag.sql" />
+      <None Remove="Structure\app\Tables\participant.sql" />
+      <Content Include="Structure\app\Tables\participant.sql" />
+      <None Remove="Structure\app\Views\v_meeting.sql" />
+      <Content Include="Structure\app\Views\v_meeting.sql" />
+      <None Remove="Structure\app\Views\v_meeting_tag.sql" />
+      <Content Include="Structure\app\Views\v_meeting_tag.sql" />
+      <None Remove="Structure\app\Views\v_participant.sql" />
+      <Content Include="Structure\app\Views\v_participant.sql" />
+    </ItemGroup>
+
+</Project>

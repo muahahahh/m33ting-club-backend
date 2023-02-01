@@ -1,0 +1,71 @@
+version: 2.1
+
+references:
+  default_env: &default_env
+    working_directory: ~/project
+    docker:
+      - image: cimg/base:2022.04
+
+orbs:
+  aws-cli: circleci/aws-cli@3.1.0
+  aws-ecr: circleci/aws-ecr@8.1.0
+  aws-code-deploy: circleci/aws-code-deploy@2.0.0
+
+jobs:
+  checkout_code:
+    <<: *default_env
+    steps:
+      - checkout
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
+
+  trigger_code_deploy:
+    parameters:
+      deployment-group:
+        type: string
+    executor: aws-cli/default
+    working_directory: ~/project
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Configure deployment
+          command: |
+            echo IMAGE=${AWS_ECR_ACCOUNT_URL}/m33ting-club-backend:${CIRCLE_SHA1} >> .env
+      - aws-cli/setup:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          aws-region: AWS_DEFAULT_REGION
+      - aws-code-deploy/push-bundle:
+          application-name: m33ting-club-backend
+          bundle-bucket: << parameters.deployment-group >>-codedeploy
+          bundle-key: codedeploy/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BUILD_NUM}
+      - aws-code-deploy/deploy-bundle:
+          application-name: m33ting-club-backend
+          bundle-bucket: << parameters.deployment-group >>-codedeploy
+          bundle-key: codedeploy/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BUILD_NUM}
+          deployment-group: << parameters.deployment-group >>
+
+
+workflows:
+  build_deploy:
+    jobs:
+      - checkout_code
+      - trigger_code_deploy:
+          name: trigger_code_deploy_staging
+          deployment-group: m33-staging-backend
+          requires:
+            - checkout_code
+          filters:
+            branches:
+              only: staging
+      - trigger_code_deploy:
+          name: trigger_code_deploy_prod
+          deployment-group: m33-prod-backend
+          requires:
+            - checkout_code
+          filters:
+            branches:
+              only: prod

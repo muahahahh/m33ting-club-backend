@@ -1,0 +1,38 @@
+#!/bin/bash
+set -e
+set -u
+set -x
+REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r ".region")
+ENV=$(curl http://169.254.169.254/latest/meta-data/tags/instance/env)
+
+
+VARS=$(aws --region $REGION ssm get-parameters-by-path --recursive --path /m33ting-club-backend/$ENV --with-decryption | jq -r '.Parameters | .[] | .Name + "=" + .Value' | sed -e s#/m33ting-club-backend/$ENV/##g)
+
+cd /opt/codedeploy-agent/deployment-root/${DEPLOYMENT_GROUP_ID}/${DEPLOYMENT_ID}/deployment-archive
+save_environments() {
+  touch .env.$ENV
+  echo $VARS
+  for envvar in ${VARS}; do
+    echo $envvar >> .env.$ENV;
+  done
+}
+
+save_environments
+
+FIREBASE_CREDENTIALS_JSON_VAR=$(aws --region $REGION ssm get-parameter --name "/m33ting-club-backend/$ENV/FIREBASE_CREDENTIALS_JSON" --with-decryption | jq '.Parameter.Value' | jq '.|fromjson')
+touch firebase/firebase-credentials.json
+echo $FIREBASE_CREDENTIALS_JSON_VAR
+echo $FIREBASE_CREDENTIALS_JSON_VAR > firebase/firebase-credentials.json
+
+# Run migrations
+M33TING_CLUB_DATABASE=$(aws --region $REGION ssm get-parameter --name "/m33ting-club-backend/$ENV/M33tingClub__Database__ConnectionString" --with-decryption | jq '.Parameter.Value' | sed 's/^.//;s/.$//')
+cd /opt/codedeploy-agent/deployment-root/${DEPLOYMENT_GROUP_ID}/${DEPLOYMENT_ID}/deployment-archive
+docker build -f migrator.Dockerfile -t m33tingclub-migrator .
+docker run -t m33tingclub-migrator "${M33TING_CLUB_DATABASE}" Migrations
+
+# Run actual server start code
+cd /opt/codedeploy-agent/deployment-root/${DEPLOYMENT_GROUP_ID}/${DEPLOYMENT_ID}/deployment-archive
+COMPOSE="docker-compose -p m33ting-club -f docker-compose.$ENV.yml"
+${COMPOSE} build
+${COMPOSE} up -d
+docker image prune -f
