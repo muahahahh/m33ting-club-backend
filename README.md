@@ -13,8 +13,8 @@ Application is thoroughly covered with unit and integration tests using Nunit.
 
 ### Docs
 
-1. [Infrastructure](./docs/infra.md)
-2. [Authorization](./docs/authorization_in_swagger.md)
+1. [AWS Infrastructure](./docs/infra.md)
+2. [Firebase Authorization](./docs/authorization_in_swagger.md)
 3. [Docker](./docs/docker.md)
 4. [Migrations](./docs/migrations.md)
 5. [Env variables](./docs/overriding_env_variables.md)
